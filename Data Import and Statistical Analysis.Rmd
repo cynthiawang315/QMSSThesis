@@ -1,0 +1,287 @@
+---
+title: "Data Import and Statistical Analysis"
+output:
+  html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
+
+```{r}
+library(tidyverse)
+```
+
+
+```{r}
+my_data <- PUF2018_100819 %>% select(age_group = CATAG3, gender = irsex, education = eduhighcat,total_fam_income = IRFAMIN3,marital_status = irmarit,youth_depression = ymdeyr,adult_depression = amdeyr,nicotine = dnicnsp,alcohol = depndalc,marijuana = depndmrj,cocaine = depndcoc,heroin = depndher,hallucinogen = depndpyhal,inhalant = depndpyinh,methamphetamine = depndpymth,pain_reliever = depndpypnr,tranquilizer = depndpytrq,stimulant = depndpystm,psychotherapeutic = depndpypsy,adult_think = adwrsthk,adult_plan = adwrspln,adult_attempt = adwrsatp,youth_think = yowrsthk,youth_plan = yowrspln,youth_attempt = yowrsatp) %>% filter(youth_depression == 1|adult_depression == 1)
+```
+
+
+```{r}
+write.csv(my_data,"import.csv")
+```
+
+
+## logistic regression
+
+```{r}
+df <- read_csv('CleanData.csv')
+```
+
+```{r}
+library(sjPlot)
+library(sjmisc)
+library(sjlabelled)
+library(jtools)
+library(gtsummary)
+library(stargazer)
+```
+
+
+```{r}
+think <- glm(think ~ as.factor(age_group) + as.factor(education) + as.factor(gender) + as.factor(total_fam_income) + as.factor(marital_status) + nicotine + alcohol + marijuana + cocaine + heroin + hallucinogen + inhalant + methamphetamine + pain_reliever + tranquilizer + stimulant + psychotherapeutic, df, family = binomial)
+tbl_think <- tbl_regression(think)
+```
+
+
+```{r}
+plan = glm(plan ~ as.factor(age_group) + as.factor(education) + as.factor(gender) + as.factor(total_fam_income) + as.factor(marital_status) + nicotine + alcohol + marijuana + cocaine + heroin + hallucinogen + inhalant + methamphetamine + pain_reliever + tranquilizer + stimulant + psychotherapeutic, df,  family = binomial)
+tbl_plan <- tbl_regression(plan)
+```
+
+```{r}
+attempt = glm(attempt ~ as.factor(age_group) + as.factor(education) + as.factor(gender) + as.factor(total_fam_income) + as.factor(marital_status) + nicotine + alcohol + marijuana + cocaine + heroin + hallucinogen + inhalant + methamphetamine + pain_reliever + tranquilizer + stimulant + psychotherapeutic, df,  family = binomial)
+tbl_attempt <- tbl_regression(attempt)
+```
+
+```{r}
+library(gt)
+all <- tbl_merge(
+    tbls = list(tbl_think, tbl_plan, tbl_attempt),tab_spanner = c('Suicidal thoughts', 'Suicidal plan', 'Suicidal attempt'))
+gtsave(as_gt(all), 'all.png', path = '/Users/cynthiawang/Desktop/Cynthia/Columbia_University/SPRING/Thesis/data')
+```
+
+```{r}
+think_1 = glm(think ~  as.factor(gender) + as.factor(total_fam_income) + as.factor(marital_status) + nicotine + alcohol + marijuana + cocaine + heroin + hallucinogen + inhalant + methamphetamine + pain_reliever + tranquilizer + stimulant + psychotherapeutic, df, subset = df['age_group'] == 1, family = binomial)
+tbl_think_1 <- tbl_regression(think_1)
+summary(think_1)
+```
+
+```{r}
+think_2 = glm(think ~ as.factor(education) + as.factor(gender) + as.factor(total_fam_income) + as.factor(marital_status) + nicotine + alcohol + marijuana + cocaine + heroin + hallucinogen + inhalant + methamphetamine + pain_reliever + tranquilizer + stimulant + psychotherapeutic, df, subset = df['age_group'] == 2, family = binomial)
+tbl_think_2 <- tbl_regression(think_2)
+summary(think_2)
+```
+
+```{r}
+think_3 = glm(think ~ as.factor(education) + as.factor(gender) + as.factor(total_fam_income) + as.factor(marital_status) + nicotine + alcohol + marijuana + cocaine + heroin + hallucinogen + inhalant + methamphetamine + pain_reliever + tranquilizer + stimulant + psychotherapeutic, df, subset = df['age_group'] == 3, family = binomial)
+tbl_think_3 <- tbl_regression(think_3)
+summary(think_3)
+```
+
+
+```{r}
+think_4 = glm(think ~ as.factor(education) + as.factor(gender) + as.factor(total_fam_income) + as.factor(marital_status) + nicotine + alcohol + marijuana + cocaine + heroin + hallucinogen + inhalant + methamphetamine + pain_reliever + tranquilizer + stimulant + psychotherapeutic, df, subset = df['age_group'] == 4, family = binomial)
+tbl_think_4 <- tbl_regression(think_4)
+summary(think_4)
+```
+
+
+```{r}
+think_5 = glm(think ~ as.factor(education) + as.factor(gender) + as.factor(total_fam_income) + as.factor(marital_status) + nicotine + alcohol + marijuana + cocaine + heroin + hallucinogen + inhalant + methamphetamine + pain_reliever + tranquilizer + stimulant + psychotherapeutic, df, subset = df['age_group'] == 5, family = binomial)
+tbl_think_5 <- tbl_regression(think_5)
+summary(think_5)
+```
+
+
+```{r}
+plan_1 = glm(plan ~  as.factor(gender) + as.factor(total_fam_income) + as.factor(marital_status) + nicotine + alcohol + marijuana + cocaine + heroin + hallucinogen + inhalant + methamphetamine + pain_reliever + tranquilizer + stimulant + psychotherapeutic, df, subset = df['age_group'] == 1, family = binomial)
+summary(plan_1)
+```
+
+```{r}
+plan_2 = glm(plan ~ as.factor(education) + as.factor(gender) + as.factor(total_fam_income) + as.factor(marital_status) + nicotine + alcohol + marijuana + cocaine + heroin + hallucinogen + inhalant + methamphetamine + pain_reliever + tranquilizer + stimulant + psychotherapeutic, df, subset = df['age_group'] == 2, family = binomial)
+summary(plan_2)
+```
+
+```{r}
+plan_3 = glm(plan ~ as.factor(education) + as.factor(gender) + as.factor(total_fam_income) + as.factor(marital_status) + nicotine + alcohol + marijuana + cocaine + heroin + hallucinogen + inhalant + methamphetamine + pain_reliever + tranquilizer + stimulant + psychotherapeutic, df, subset = df['age_group'] == 3, family = binomial)
+summary(plan_3)
+```
+
+```{r}
+plan_4 = glm(plan ~ as.factor(education) + as.factor(gender) + as.factor(total_fam_income) + as.factor(marital_status) + nicotine + alcohol + marijuana + cocaine + heroin + hallucinogen + inhalant + methamphetamine + pain_reliever + tranquilizer + stimulant + psychotherapeutic, df, subset = df['age_group'] == 4, family = binomial)
+summary(plan_4)
+```
+
+```{r}
+plan_5 = glm(plan ~ as.factor(education) + as.factor(gender) + as.factor(total_fam_income) + as.factor(marital_status) + nicotine + alcohol + marijuana + cocaine + heroin + hallucinogen + inhalant + methamphetamine + pain_reliever + tranquilizer + stimulant + psychotherapeutic, df, subset = df['age_group'] == 5, family = binomial)
+summary(plan_5)
+```
+
+```{r}
+attempt_1 = glm(attempt ~  as.factor(gender) + as.factor(total_fam_income) + as.factor(marital_status) + nicotine + alcohol + marijuana + cocaine + heroin + hallucinogen + inhalant + methamphetamine + pain_reliever + tranquilizer + stimulant + psychotherapeutic, df, subset = df['age_group'] == 1, family = binomial)
+summary(attempt_1)
+```
+
+```{r}
+attempt_2 = glm(attempt ~ as.factor(education) + as.factor(gender) + as.factor(total_fam_income) + as.factor(marital_status) + nicotine + alcohol + marijuana + cocaine + heroin + hallucinogen + inhalant + methamphetamine + pain_reliever + tranquilizer + stimulant + psychotherapeutic, df, subset = df['age_group'] == 2, family = binomial)
+summary(attempt_2)
+```
+
+```{r}
+attempt_3 = glm(attempt ~ as.factor(education) + as.factor(gender) + as.factor(total_fam_income) + as.factor(marital_status) + nicotine + alcohol + marijuana + cocaine + heroin + hallucinogen + inhalant + methamphetamine + pain_reliever + tranquilizer + stimulant + psychotherapeutic, df, subset = df['age_group'] == 3, family = binomial)
+summary(attempt_3)
+```
+
+```{r}
+attempt_4 = glm(attempt ~ as.factor(education) + as.factor(gender) + as.factor(total_fam_income) + as.factor(marital_status) + nicotine + alcohol + marijuana + cocaine + heroin + hallucinogen + inhalant + methamphetamine + pain_reliever + tranquilizer + stimulant + psychotherapeutic, df, subset = df['age_group'] == 4, family = binomial)
+summary(attempt_4)
+```
+
+```{r}
+attempt_5 = glm(attempt ~ as.factor(education) + as.factor(gender) + as.factor(total_fam_income) + as.factor(marital_status) + nicotine + alcohol + marijuana + cocaine + heroin + hallucinogen + inhalant + methamphetamine + pain_reliever + tranquilizer + stimulant + psychotherapeutic, df, subset = df['age_group'] == 5, family = binomial)
+summary(attempt_5)
+```
+
+
+```{r}
+SUD_df <- df %>% 
+  gather(drug, SUD, 7:18) %>% 
+  group_by(drug) %>%
+  summarise(n=n(), SUD= sum(SUD)) %>% 
+  mutate(SUD_perc=round(100*SUD/n,2))
+```
+
+```{r}
+suicide_df <- df %>% 
+  gather(suicidal_behavior, answer ,19:21) %>% 
+  group_by(suicidal_behavior) %>%
+  summarise(n=n(), answer = sum(answer)) %>% 
+  mutate(suicide_perc=round(100*answer/n,2))
+```
+
+```{r}
+ggplot(SUD_df, aes(x=reorder(drug, -SUD_perc), y=SUD_perc, fill=drug))+ geom_bar(position = 'dodge', stat = "identity", width = .7, fill = 'grey') + labs(x='Substance Use Disorder', y="Percent(%)") + theme(legend.position = "none") + theme(axis.text.x = element_text(angle = 45, hjust = 1)) + geom_text(aes(label = SUD_perc, size = 1, vjust = -0.1)) + theme(text = element_text(size = 11), panel.border = element_blank(),  
+  panel.grid.major = element_blank(),
+  panel.grid.minor = element_blank(),
+  panel.background = element_blank(),
+  axis.line = element_line(colour = "grey"))
+```
+
+```{r}
+SUD_df_1 <- df %>%
+  filter(age_group == 1) %>%
+  gather(drug, SUD, 7:18) %>% 
+  group_by(drug) %>%
+  summarise(n=n(), SUD= sum(SUD)) %>% 
+  mutate(SUD_perc=round(100*SUD/n,2))
+```
+
+
+```{r}
+# Prevalence of Substance Use Disorders Among Adolescents Aged 12-17
+
+ggplot(SUD_df_1, aes(x=reorder(drug, -SUD_perc), y=SUD_perc, fill=drug))+ geom_bar(position = 'dodge', stat = "identity", width = .7, fill = 'grey') + labs(x='Substance Use Disorder', y="Percent(%)") + theme(legend.position = "none") + theme(axis.text.x = element_text(angle = 45, hjust = 1)) + geom_text(aes(label = SUD_perc, size = 1, vjust = -0.05)) + theme(text = element_text(size = 11), panel.border = element_blank(),  
+  panel.grid.major = element_blank(),
+  panel.grid.minor = element_blank(),
+  panel.background = element_blank(),
+  axis.line = element_line(colour = "grey"))
+```
+
+```{r}
+SUD_df_2 <- df %>%
+  filter(age_group == 2) %>%
+  gather(drug, SUD, 7:18) %>% 
+  group_by(drug) %>%
+  summarise(n=n(), SUD= sum(SUD)) %>% 
+  mutate(SUD_perc=round(100*SUD/n,2))
+```
+
+
+```{r}
+# Prevalence of Substance Use Disorders Among Adults Aged 18-25
+ggplot(SUD_df_2, aes(x=reorder(drug, -SUD_perc), y=SUD_perc, fill=drug))+ geom_bar(position = 'dodge', stat = "identity", width = .7, fill = 'grey') + labs(x='Substance Use Disorder', y="Percent(%)") + theme(legend.position = "none") + theme(axis.text.x = element_text(angle = 45, hjust = 1)) + geom_text(aes(label = SUD_perc, size = 1, vjust = -0.05)) + theme(text = element_text(size = 11), panel.border = element_blank(),  
+  panel.grid.major = element_blank(),
+  panel.grid.minor = element_blank(),
+  panel.background = element_blank(),
+  axis.line = element_line(colour = "grey"))
+```
+
+```{r}
+SUD_df_3 <- df %>%
+  filter(age_group == 3) %>%
+  gather(drug, SUD, 7:18) %>% 
+  group_by(drug) %>%
+  summarise(n=n(), SUD= sum(SUD)) %>% 
+  mutate(SUD_perc=round(100*SUD/n,2))
+```
+
+
+```{r}
+#Prevalence of Substance Use Disorders Among Adults Aged 26-34
+
+ggplot(SUD_df_3, aes(x=reorder(drug, -SUD_perc), y=SUD_perc, fill=drug))+ geom_bar(position = 'dodge', stat = "identity", width = .7, fill = 'grey') + labs(x='Substance Use Disorder', y="Percent(%)") + theme(legend.position = "none") + theme(axis.text.x = element_text(angle = 45, hjust = 1)) + geom_text(aes(label = SUD_perc, size = 1, vjust = -0.05)) + theme(text = element_text(size = 11), panel.border = element_blank(),  
+  panel.grid.major = element_blank(),
+  panel.grid.minor = element_blank(),
+  panel.background = element_blank(),
+  axis.line = element_line(colour = "grey"))
+```
+
+```{r}
+SUD_df_4 <- df %>%
+  filter(age_group == 4) %>%
+  gather(drug, SUD, 7:18) %>% 
+  group_by(drug) %>%
+  summarise(n=n(), SUD= sum(SUD)) %>% 
+  mutate(SUD_perc=round(100*SUD/n,2))
+```
+
+
+```{r}
+# Prevalence of Substance Use Disorders Among Adults Aged 35-49
+
+ggplot(SUD_df_4, aes(x=reorder(drug, -SUD_perc), y=SUD_perc, fill=drug))+ geom_bar(position = 'dodge', stat = "identity", width = .7, fill = 'grey') + labs(x='Substance Use Disorder', y="Percent(%)") + theme(legend.position = "none") + theme(axis.text.x = element_text(angle = 45, hjust = 1)) + geom_text(aes(label = SUD_perc, size = 1, vjust = -0.05)) + theme(text = element_text(size = 11), panel.border = element_blank(),  
+  panel.grid.major = element_blank(),
+  panel.grid.minor = element_blank(),
+  panel.background = element_blank(),
+  axis.line = element_line(colour = "grey"))
+```
+
+
+```{r}
+SUD_df_5 <- df %>%
+  filter(age_group == 5) %>%
+  gather(drug, SUD, 7:18) %>% 
+  group_by(drug) %>%
+  summarise(n=n(), SUD= sum(SUD)) %>% 
+  mutate(SUD_perc=round(100*SUD/n,2))
+```
+
+
+```{r}
+# Prevalence of Substance Use Disorders Among Adults Aged 50+
+
+ggplot(SUD_df_5, aes(x=reorder(drug, -SUD_perc), y=SUD_perc, fill=drug))+ geom_bar(position = 'dodge', stat = "identity", width = .7, fill = 'grey') + labs(x='Substance Use Disorder', y="Percent(%)") + theme(legend.position = "none") + theme(axis.text.x = element_text(angle = 45, hjust = 1)) + geom_text(aes(label = SUD_perc, size = 1, vjust = -0.05)) + theme(text = element_text(size = 11), panel.border = element_blank(),  
+  panel.grid.major = element_blank(),
+  panel.grid.minor = element_blank(),
+  panel.background = element_blank(),
+  axis.line = element_line(colour = "grey"))
+```
+
+
+
+
+
+```{r}
+ggplot(suicide_df, aes(x=reorder(suicidal_behavior, -suicide_perc), y=suicide_perc, fill=suicidal_behavior))+ geom_bar(position = 'dodge', stat = "identity", width = .3, fill = 'grey') + labs(x='Suicidal Thoughts/Behaviors', y="Percent(%)") + theme(legend.position = "none") + geom_text(aes(label = suicide_perc, size = 5, vjust = -0.2)) + theme(text = element_text(size = 11), panel.border = element_blank(),  
+  panel.grid.major = element_blank(),
+  panel.grid.minor = element_blank(),
+  panel.background = element_blank(),
+  axis.line = element_line(colour = "grey"))
+```
+
+
+
+
